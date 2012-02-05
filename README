@@ -1,0 +1,8 @@
+Ganondorf is a C# library (with accompanying Unit- and Performance- tests) designed to make serialising objects to and from the query string less arduous.
+
+It is targeted at .net 4, utilises the ILGenerator and DynamicMethods to make serialisation comparable to rolling your own conversion methods from a speed perspective.
+
+Known issues:
+  - Sub-objects that are null cause the dynamic method to thrown a NullReferenceException.
+  - Objects with recursive definitions cannot be serialised.
+  - Compiling to platforms other than MSIL cause an "Attempt to read or write protected memory" issue.

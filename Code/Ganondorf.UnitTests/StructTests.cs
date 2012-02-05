@@ -17,6 +17,23 @@
             Assert.AreEqual(input, output);
         }
 
+        [Test]
+        public void NestedStructTest()
+        {
+            QueryStringSerialiser<NestedStruct> s = new QueryStringSerialiser<NestedStruct>();
+            var input = new NestedStruct { Test = new ValueTypeTestStruct() };
+
+            var qs = s.Map(input);
+            var output = s.Load(qs);
+
+            Assert.AreEqual(input, output);
+        }
+
+        private struct NestedStruct
+        {
+            public ValueTypeTestStruct Test { get; set; }
+        }
+
         private struct ValueTypeTestStruct
         {
             public string TestString { get; set; }

@@ -1,20 +1,42 @@
-﻿namespace Ganondorf.UnitTests.Classes
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ValueTypeTestClass.cs" company="SigmoidFx">
+//   Copyright Ed 2012.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Ganondorf.UnitTests.Classes
 {
+    /// <summary>
+    /// This class is used in a variety of tests to ensure the method generators function correctly.
+    /// </summary>
     public class ValueTypeTestClass
     {
         public string TestString { get; set; }
+
         public int TestInt { get; set; }
+
         public decimal TestDecimal { get; set; }
+
         public float TestFloat { get; set; }
+
         public double TestDouble { get; set; }
+
         public long TestLong { get; set; }
+
         public bool TestBool { get; set; }
+
         public short TestShort { get; set; }
+
         public char TestChar { get; set; }
+
         public uint TestUnsignedInt { get; set; }
+
         public ulong TestUnsignedLong { get; set; }
+
         public ushort TestUnsignedShort { get; set; }
+
         public byte TestByte { get; set; }
+
         public sbyte TestSignedByte { get; set; }
 
         public override bool Equals(object toCompare)

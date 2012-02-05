@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Classes\ValueTypeTestClass.cs" />
     <Compile Include="ConversionTests.cs" />
+    <Compile Include="EnumTests.cs" />
     <Compile Include="InvalidObjectTests.cs" />
     <Compile Include="NestedTypesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -200,10 +200,19 @@ namespace Ganondorf.Internals
 
                 string newPrefix = prefix + prop.Name;
                 this.GenerateLevel(generator, type, newPrefix + "_", toLoadLocation, newTrail);
-
-                generator.Emit(OpCodes.Ldloc_S, parentLocation);
-                generator.Emit(OpCodes.Ldloc_S, currentLocation);
-                generator.Emit(OpCodes.Callvirt, prop.GetSetMethod());
+                
+                if (levelContainingType.IsClass)
+                {
+                    generator.Emit(OpCodes.Ldloc_S, parentLocation);
+                    generator.Emit(OpCodes.Ldloc_S, currentLocation);
+                    generator.Emit(OpCodes.Callvirt, prop.GetSetMethod());
+                }
+                else
+                {
+                    generator.Emit(OpCodes.Ldloca_S, parentLocation);
+                    generator.Emit(OpCodes.Ldloc_S, currentLocation);
+                    generator.Emit(OpCodes.Call, prop.GetSetMethod());
+                }
             }
         }
 

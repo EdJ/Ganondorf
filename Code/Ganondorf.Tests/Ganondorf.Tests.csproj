@@ -8,8 +8,8 @@
     <ProjectGuid>{6398E591-4496-41AD-9D02-23D7B7760D3C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ganondorf.UnitTests</RootNamespace>
-    <AssemblyName>Ganondorf.UnitTests</AssemblyName>
+    <RootNamespace>Ganondorf.Tests</RootNamespace>
+    <AssemblyName>Ganondorf.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

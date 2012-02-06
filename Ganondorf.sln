@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ganondorf", "Code\Ganondorf\Ganondorf.csproj", "{DAA202EE-9AD2-4150-8AC2-01FBE59667F7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ganondorf.PerformanceTest", "Code\Ganondorf.PerformanceTest\Ganondorf.PerformanceTest.csproj", "{5BB03D90-C991-401A-B7F7-D8D67FAF3F6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ganondorf.UnitTests", "Code\Ganondorf.UnitTests\Ganondorf.UnitTests.csproj", "{6398E591-4496-41AD-9D02-23D7B7760D3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ganondorf.Tests", "Code\Ganondorf.Tests\Ganondorf.Tests.csproj", "{6398E591-4496-41AD-9D02-23D7B7760D3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

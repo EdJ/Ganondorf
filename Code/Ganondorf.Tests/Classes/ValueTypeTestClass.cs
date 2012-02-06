@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Ganondorf.UnitTests.Classes
+namespace Ganondorf.Tests.Classes
 {
     /// <summary>
     /// This class is used in a variety of tests to ensure the method generators function correctly.

@@ -1,8 +1,8 @@
-﻿namespace Ganondorf.UnitTests
+﻿namespace Ganondorf.Tests
 {
     using System;
 
-    using Ganondorf.UnitTests.Classes;
+    using Ganondorf.Tests.Classes;
 
     using NUnit.Framework;
 

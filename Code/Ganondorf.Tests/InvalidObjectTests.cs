@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Ganondorf.UnitTests
+namespace Ganondorf.Tests
 {
     using System;
     using System.Reflection;

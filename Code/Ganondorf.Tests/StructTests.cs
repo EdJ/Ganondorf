@@ -1,4 +1,4 @@
-﻿namespace Ganondorf.UnitTests
+﻿namespace Ganondorf.Tests
 {
     using NUnit.Framework;
 
@@ -27,6 +27,13 @@
             var output = s.Load(qs);
 
             Assert.AreEqual(input, output);
+        }
+
+        private static void Map(NestedStruct test)
+        {
+            var test2 = test.Test;
+
+            test.Test = new ValueTypeTestStruct();
         }
 
         private struct NestedStruct

@@ -100,7 +100,7 @@ namespace Ganondorf
         /// </returns>
         private static Func<NameValueCollection, T> GenerateLoadMethod()
         {
-            var methodGenerator = new FromNvcMethodGenerator<T>();
+            var methodGenerator = new FromNvcMethodGenerator<T>(new IlSnippetGenerator());
             return methodGenerator.GenerateMethod();
         }
 
@@ -112,7 +112,7 @@ namespace Ganondorf
         /// </returns>
         private static Func<T, NameValueCollection> GenerateMapMethod()
         {
-            var methodGenerator = new ToNvcMethodGenerator<T>();
+            var methodGenerator = new ToNvcMethodGenerator<T>(new IlSnippetGenerator());
             return methodGenerator.GenerateMethod();
         }
 

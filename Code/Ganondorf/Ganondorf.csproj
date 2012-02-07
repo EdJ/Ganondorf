@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\Ganondorf.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -43,8 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\InvalidTypeException.cs" />
+    <Compile Include="Interfaces\ISnippetGenerator.cs" />
     <Compile Include="Internals\BaseMethodGenerator.cs" />
     <Compile Include="Internals\FromNvcMethodGenerator.cs" />
+    <Compile Include="Internals\IlSnippetGenerator.cs" />
     <Compile Include="Internals\TypeHelper.cs" />
     <Compile Include="Internals\ToNvcMethodGenerator.cs" />
     <Compile Include="QueryStringSerialiser.cs" />

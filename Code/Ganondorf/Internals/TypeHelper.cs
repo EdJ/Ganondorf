@@ -39,6 +39,15 @@ namespace Ganondorf.Internals
 
         #endregion
 
+        #region Public Properties
+
+        /// <summary>
+        /// String type, to avoid repeated typeof calls.
+        /// </summary>
+        public static readonly Type StringType = typeof(string);
+
+        #endregion
+
         #region Methods
 
         /// <summary>

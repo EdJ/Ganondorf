@@ -103,31 +103,6 @@ namespace Ganondorf.Internals
         /// </returns>
         protected abstract DynamicMethod GenerateDelegate();
 
-        /// <summary>
-        /// A method common to both method generators. It's used to generate a single level of the type's property hierarchy as a mapping function.
-        /// </summary>
-        /// <param name="generator">
-        /// The ILGenerator that is being used to generate the DynamicMethod.
-        /// </param>
-        /// <param name="levelContainingType">
-        /// The type of the class that's being recursed.
-        /// </param>
-        /// <param name="prefix">
-        /// The prefix to use on the property names when adding them as keys to the NameValueCollection.
-        /// </param>
-        /// <param name="toLoadLocation">
-        /// The current local variable location of the parent instance.
-        /// </param>
-        /// <param name="parentTypeTrail">
-        /// A list of types that have been seen before when serialising the class. If a type is seen twice trying to recurse it results in a possible infinite loop.
-        /// </param>
-        protected abstract void GenerateLevel(
-            ILGenerator generator, 
-            Type levelContainingType, 
-            string prefix, 
-            int toLoadLocation, 
-            HashSet<Type> parentTypeTrail);
-
         #endregion
     }
 }

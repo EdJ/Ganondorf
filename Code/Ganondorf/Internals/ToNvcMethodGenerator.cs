@@ -10,8 +10,9 @@ namespace Ganondorf.Internals
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq;
-    using System.Reflection;
     using System.Reflection.Emit;
+
+    using Ganondorf.Interfaces;
 
     /// <summary>
     /// Used to generate a method to add value from an object into a NameValueCollection representing the query string.
@@ -21,6 +22,30 @@ namespace Ganondorf.Internals
     /// </typeparam>
     internal class ToNvcMethodGenerator<T> : BaseMethodGenerator<T, NameValueCollection>
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToNvcMethodGenerator{T}"/> class.
+        /// </summary>
+        /// <param name="snippetGenerator">
+        /// The snippet generator used to generate the DynamicMethod.
+        /// </param>
+        internal ToNvcMethodGenerator(ISnippetGenerator snippetGenerator)
+        {
+            this.SnippetGenerator = snippetGenerator;
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        /// <summary>
+        /// Gets or sets the snippet generator used to generate the DynamicMethod.
+        /// </summary>
+        private ISnippetGenerator SnippetGenerator { get; set; }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -33,41 +58,24 @@ namespace Ganondorf.Internals
         {
             var fromType = typeof(T);
 
-            DynamicMethod dm = new DynamicMethod(
-                "ToNvc_" + fromType.FullName, 
-                MethodAttributes.Static | MethodAttributes.Public, 
-                CallingConventions.Standard, 
-                NvcType, 
-                new[] { fromType }, 
-                fromType, 
-                true);
+            this.SnippetGenerator.DeclareMethod(NvcType, fromType, "ToNvc_");
 
-            var nvcConstructor =
-                NvcType.GetConstructor(
-                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, 
-                    null, 
-                    new Type[] { }, 
-                    new ParameterModifier[] { });
+            var localOffset = this.SnippetGenerator.DeclarePrimitiveContainers();
+            this.SnippetGenerator.DeclareLocal(NvcType);
+            this.SnippetGenerator.DeclareLocal(typeof(T));
 
-            ILGenerator generator = dm.GetILGenerator();
+            this.SnippetGenerator.InstantiateType(NvcType, localOffset);
 
-            generator.DeclareLocal(NvcType);
-            generator.DeclareLocal(typeof(object));
-            generator.DeclareLocal(typeof(decimal));
-            generator.DeclareLocal(typeof(float));
-            generator.DeclareLocal(typeof(double));
-            generator.DeclareLocal(typeof(T));
+            var inputLocation = localOffset + 1;
 
-            generator.Emit(OpCodes.Newobj, nvcConstructor);
-            generator.Emit(OpCodes.Stloc, 0);
+            this.SnippetGenerator.LoadArgument(0);
+            this.SnippetGenerator.StoreTopStackItemInLocation(inputLocation);
 
-            generator.Emit(OpCodes.Ldarg, 0);
-            generator.Emit(OpCodes.Stloc, 5);
+            this.GenerateLevel(fromType, string.Empty, localOffset, inputLocation, new HashSet<Type>());
 
-            this.GenerateLevel(generator, fromType, string.Empty, 5, new HashSet<Type>());
+            this.SnippetGenerator.LoadReturnValue(localOffset);
 
-            generator.Emit(OpCodes.Ldloc, 0);
-            generator.Emit(OpCodes.Ret);
+            var dm = this.SnippetGenerator.GetGeneratedMethod();
 
             return dm;
         }
@@ -75,14 +83,14 @@ namespace Ganondorf.Internals
         /// <summary>
         /// Generates IL for loading a single reference type from a NameValueCollection.
         /// </summary>
-        /// <param name="generator">
-        /// The ILGenerator that is being used to generate the DynamicMethod.
-        /// </param>
         /// <param name="levelContainingType">
         /// The type of the class that's being recursed.
         /// </param>
         /// <param name="prefix">
         /// The prefix to use on the property names when adding them as keys to the NameValueCollection.
+        /// </param>
+        /// <param name="outputLocation">
+        /// The current local variable location of the output instance.
         /// </param>
         /// <param name="toLoadLocation">
         /// The current local variable location of the parent instance.
@@ -90,8 +98,7 @@ namespace Ganondorf.Internals
         /// <param name="parentTypeTrail">
         /// A list of types that have been seen before when serialising the class. If a type is seen twice trying to recurse it results in a possible infinite loop.
         /// </param>
-        protected override void GenerateLevel(
-            ILGenerator generator, Type levelContainingType, string prefix, int toLoadLocation, HashSet<Type> parentTypeTrail)
+        protected void GenerateLevel(Type levelContainingType, string prefix, int outputLocation, int toLoadLocation, HashSet<Type> parentTypeTrail)
         {
             var stringType = typeof(string);
 
@@ -102,51 +109,17 @@ namespace Ganondorf.Internals
             foreach (var prop in properties.Where(x => !TypeNeedsRecursing(x.PropertyType)))
             {
                 string newPrefix = prefix + prop.Name;
-                generator.Emit(OpCodes.Ldloc, 0);
+                this.SnippetGenerator.LoadLocation(outputLocation);
 
-                generator.Emit(OpCodes.Ldstr, newPrefix);
+                this.SnippetGenerator.LoadString(newPrefix);
 
-                if (levelContainingType.IsClass)
-                {
-                    generator.Emit(OpCodes.Ldloc, toLoadLocation);
-                }
-                else
-                {
-                    generator.Emit(OpCodes.Ldloca, toLoadLocation);
-                }
+                this.SnippetGenerator.LoadContainingInstanceOntoStack(toLoadLocation, levelContainingType);
 
-                generator.Emit(OpCodes.Callvirt, prop.GetGetMethod());
-                var type = prop.PropertyType;
-                if (type != stringType)
-                {
-                    var location = 1;
-                    if (type == typeof(decimal))
-                    {
-                        location = 2;
-                    }
-                    else if (type == typeof(float))
-                    {
-                        location = 3;
-                    }
-                    else if (type == typeof(double))
-                    {
-                        location = 4;
-                    }
+                this.SnippetGenerator.CallMethod(prop.GetGetMethod(), true);
+                
+                this.SnippetGenerator.ToStringPrimitiveValue(prop);
 
-                    if (type.IsEnum)
-                    {
-                        type = typeof(int);
-                    }
-
-                    generator.Emit(OpCodes.Stloc, location);
-
-                    generator.Emit(OpCodes.Ldloca, location);
-                    var toStringMethod = type.GetMethod("ToString", new Type[] { });
-
-                    generator.Emit(OpCodes.Call, toStringMethod);
-                }
-
-                generator.Emit(OpCodes.Callvirt, addMethod);
+                this.SnippetGenerator.CallMethod(addMethod, true);
             }
 
             foreach (var prop in properties.Where(x => TypeNeedsRecursing(x.PropertyType)))
@@ -161,30 +134,17 @@ namespace Ganondorf.Internals
                 string newPrefix = prefix + prop.Name;
                 var type = prop.PropertyType;
 
-                if (levelContainingType.IsClass)
-                {
-                    generator.Emit(OpCodes.Ldloc, toLoadLocation);
-                }
-                else
-                {
-                    generator.Emit(OpCodes.Ldloca, toLoadLocation);
-                }
+                this.SnippetGenerator.LoadContainingInstanceOntoStack(toLoadLocation, levelContainingType);
 
                 toLoadLocation++;
-                generator.DeclareLocal(type);
 
-                if (prop.PropertyType.IsByRef)
-                {
-                    generator.Emit(OpCodes.Callvirt, prop.GetGetMethod());
-                }
-                else
-                {
-                    generator.Emit(OpCodes.Call, prop.GetGetMethod());
-                }
+                this.SnippetGenerator.DeclareLocal(type);
 
-                generator.Emit(OpCodes.Stloc, toLoadLocation);
+                this.SnippetGenerator.CallMethod(prop.GetGetMethod(), prop.PropertyType.IsByRef);
 
-                this.GenerateLevel(generator, type, newPrefix + "_", toLoadLocation, newTrail);
+                this.SnippetGenerator.StoreTopStackItemInLocation(toLoadLocation);
+
+                this.GenerateLevel(type, newPrefix + "_", outputLocation, toLoadLocation, newTrail);
             }
         }
 

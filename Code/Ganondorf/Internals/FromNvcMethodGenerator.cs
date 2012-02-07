@@ -103,7 +103,7 @@ namespace Ganondorf.Internals
             {
                 string newPrefix = prefix + prop.Name;
 
-                this.SnippetGenerator.LoadContainingInstanceOntoStack(toLoadLocation, levelContainingType);
+                this.SnippetGenerator.LoadInstanceReference(toLoadLocation, levelContainingType);
 
                 this.SnippetGenerator.LoadArgument(0);
 
@@ -111,7 +111,7 @@ namespace Ganondorf.Internals
 
                 this.SnippetGenerator.CallMethod(getMethod, true);
 
-                this.SnippetGenerator.ParsePrimitiveValue(prop);
+                this.SnippetGenerator.TryParsePrimitiveValue(prop.PropertyType);
 
                 this.SnippetGenerator.CallMethod(levelContainingType, prop.GetSetMethod());
             }
@@ -137,7 +137,9 @@ namespace Ganondorf.Internals
                 string newPrefix = prefix + prop.Name;
                 this.GenerateLevel(type, newPrefix + "_", toLoadLocation, newTrail);
 
-                this.SnippetGenerator.LoadNonPrimitiveOntoStack(levelContainingType, currentLocation, parentLocation);
+                this.SnippetGenerator.LoadInstanceReference(parentLocation, levelContainingType);
+                this.SnippetGenerator.LoadInstanceReference(currentLocation, NvcType);
+
                 this.SnippetGenerator.CallMethod(levelContainingType, prop.GetSetMethod());
             }
         }

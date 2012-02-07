@@ -69,7 +69,7 @@ namespace Ganondorf.Internals
             var inputLocation = localOffset + 1;
 
             this.SnippetGenerator.LoadArgument(0);
-            this.SnippetGenerator.StoreTopStackItemInLocation(inputLocation);
+            this.SnippetGenerator.StoreItemFromStack(inputLocation);
 
             this.GenerateLevel(fromType, string.Empty, localOffset, inputLocation, new HashSet<Type>());
 
@@ -109,15 +109,15 @@ namespace Ganondorf.Internals
             foreach (var prop in properties.Where(x => !TypeNeedsRecursing(x.PropertyType)))
             {
                 string newPrefix = prefix + prop.Name;
-                this.SnippetGenerator.LoadLocation(outputLocation);
+                this.SnippetGenerator.LoadInstanceReference(outputLocation, NvcType);
 
                 this.SnippetGenerator.LoadString(newPrefix);
 
-                this.SnippetGenerator.LoadContainingInstanceOntoStack(toLoadLocation, levelContainingType);
+                this.SnippetGenerator.LoadInstanceReference(toLoadLocation, levelContainingType);
 
                 this.SnippetGenerator.CallMethod(prop.GetGetMethod(), true);
                 
-                this.SnippetGenerator.ToStringPrimitiveValue(prop);
+                this.SnippetGenerator.ToStringPrimitiveValue(prop.PropertyType);
 
                 this.SnippetGenerator.CallMethod(addMethod, true);
             }
@@ -134,7 +134,7 @@ namespace Ganondorf.Internals
                 string newPrefix = prefix + prop.Name;
                 var type = prop.PropertyType;
 
-                this.SnippetGenerator.LoadContainingInstanceOntoStack(toLoadLocation, levelContainingType);
+                this.SnippetGenerator.LoadInstanceReference(toLoadLocation, levelContainingType);
 
                 toLoadLocation++;
 
@@ -142,7 +142,7 @@ namespace Ganondorf.Internals
 
                 this.SnippetGenerator.CallMethod(prop.GetGetMethod(), prop.PropertyType.IsByRef);
 
-                this.SnippetGenerator.StoreTopStackItemInLocation(toLoadLocation);
+                this.SnippetGenerator.StoreItemFromStack(toLoadLocation);
 
                 this.GenerateLevel(type, newPrefix + "_", outputLocation, toLoadLocation, newTrail);
             }
